@@ -22,31 +22,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Add SSH Go Module Private Key from organization secrets
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          ssh-add - <<< "${{ secrets.GO_MODULE_PRIVATE_KEY_BYGE_COMMON }}"
-          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
+      - name: Set SSH-agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.GO_MODULE_PRIVATE_KEY_BYGE_COMMON }}
 
-      - name: Setup access for private go modules
-        run: |
-          git config --global url."ssh://git@github.com/".insteadOf https://github.com/
-
-      - name: Build Docker image
+      - name: Build Docker image with docker-compose
         run: |
           cd ${{ inputs.docker_path }}
-          docker compose -f docker-compose.production.yml build --build-arg DOCKERFILE=dockerfile.production
-
-      - name: Check if image built successfully
-        run: |
-          if [ $? -ne 0 ]; then
-            echo "Failed to build Docker image"
-            exit 1
-          fi
+          docker compose -f docker-compose.production.yml build
 
   lint-go:
     runs-on: ubuntu-latest
@@ -62,20 +46,6 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-      - name: Add SSH Go Module Private Key from organization secrets
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          ssh-add - <<< "${{ secrets.GO_MODULE_PRIVATE_KEY_BYGE_COMMON }}"
-          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
-
-      - name: Setup access for private go modules
-        run: |
-          git config --global url."ssh://git@github.com/".insteadOf https://github.com/
-
       - name: Linting using golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
@@ -86,28 +56,6 @@ jobs:
 
           # Optional: working directory, useful for monorepos
           working-directory: ${{ inputs.go_module_path }}
-
-          # Optional: golangci-lint command line arguments.
-          #
-          # Note: By default, the `.golangci.yml` file should be at the root of the repository.
-          # The location of the configuration file can be changed by using `--config=`
-          # args: --timeout=30m --config=/my/path/.golangci.yml --issues-exit-code=0
-
-          # Optional: show only new issues if it's a pull request. The default value is `false`.
-          # only-new-issues: true
-
-          # Optional: if set to true, then all caching functionality will be completely disabled,
-          #           takes precedence over all other caching options.
-          # skip-cache: true
-
-          # Optional: if set to true, then the action won't cache or restore ~/go/pkg.
-          # skip-pkg-cache: true
-
-          # Optional: if set to true, then the action won't cache or restore ~/.cache/go-build.
-          # skip-build-cache: true
-
-          # Optional: The mode to install golangci-lint. It can be 'binary' or 'goinstall'.
-          # install-mode: "goinstall"
 
 
   run-tests-go:
@@ -124,19 +72,10 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-      - name: Add SSH Go Module Private Key from organization secrets
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          ssh-add - <<< "${{ secrets.GO_MODULE_PRIVATE_KEY_BYGE_COMMON }}"
-          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
-
-      - name: Setup access for private go modules
-        run: |
-          git config --global url."ssh://git@github.com/".insteadOf https://github.com/
+      - name: Set SSH-agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.GO_MODULE_PRIVATE_KEY_BYGE_COMMON }}
 
       - name: Install dependencies
         run: |
