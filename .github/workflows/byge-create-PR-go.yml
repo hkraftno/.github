@@ -46,6 +46,11 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
+      - name: Set SSH-agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.GO_MODULE_PRIVATE_KEY_BYGE_COMMON }}
+
       - name: Linting using golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
