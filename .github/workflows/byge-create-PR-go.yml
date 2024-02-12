@@ -30,7 +30,7 @@ jobs:
       - name: Build Docker image with docker-compose
         run: |
           cd ${{ inputs.docker_path }}
-          docker compose -f docker-compose.production.yml build
+          docker compose -f docker-compose.production.yml build --ssh default
 
   lint-go:
     runs-on: ubuntu-latest
