@@ -62,6 +62,8 @@ jobs:
           # Optional: working directory, useful for monorepos
           working-directory: ${{ inputs.go_module_path }}
 
+          args: --timeout 2m --verbose
+
 
   run-tests-go:
     runs-on: ubuntu-latest
