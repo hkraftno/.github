@@ -18,6 +18,11 @@ on:
         required: false
         type: string
         default: ""
+      lint_flags:
+        description: "Additional flags to pass to golangci-lint (e.g., '--build-tags test')"
+        required: false
+        type: string
+        default: ""
 
 jobs:
   build:
@@ -66,8 +71,7 @@ jobs:
           # Optional: working directory, useful for monorepos
           working-directory: ${{ inputs.go_module_path }}
 
-          args: --timeout 3m --verbose
-
+          args: --timeout 3m --verbose ${{ inputs.lint_flags }}
 
   run-tests-go:
     runs-on: ubuntu-latest
