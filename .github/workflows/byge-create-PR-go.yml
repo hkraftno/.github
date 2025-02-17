@@ -13,7 +13,11 @@ on:
         required: true
         type: string
         default: "./service/.docker"
-
+      test_flags:
+        description: "Flags to pass to the test command (e.g. '-v -tags test')"
+        required: false
+        type: string
+        default: ""
 
 jobs:
   build:
@@ -92,4 +96,4 @@ jobs:
       - name: Run tests
         run: |
           cd ${{ inputs.go_module_path }}
-          go test ./...
+          go test ${{ inputs.test_flags }} ./...
