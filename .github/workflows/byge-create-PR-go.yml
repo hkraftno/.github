@@ -52,12 +52,12 @@ jobs:
           ssh-private-key: ${{ secrets.GO_MODULE_PRIVATE_KEY_BYGE_COMMON }}
 
       - name: Linting using golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v7
         with:
           # Require: The version of golangci-lint to use.
           # When `install-mode` is `binary` (default) the value can be v1.2 or v1.2.3 or `latest` to use the latest version.
           # When `install-mode` is `goinstall` the value can be v1.2.3, `latest`, or the hash of a commit.
-          version: v1.60
+          version: v2.1.2
 
           # Optional: working directory, useful for monorepos
           working-directory: ${{ inputs.go_module_path }}
